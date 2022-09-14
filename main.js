@@ -127,7 +127,7 @@ var app = new Vue({
         }
         if(this.bodega2 == 0){
           this.isActive2=true;
-          alert("!La mercancía en la bodega 1 se ha agotado¡")
+          alert("!La mercancía en la bodega 2 se ha agotado¡")
         }
 
         this.porcentaje50dos();
