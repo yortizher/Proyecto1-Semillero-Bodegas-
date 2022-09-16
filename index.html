@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container mt-4 justify-content-center" id="app"
+        style="border: 5px solid rgb(24, 212, 245); font-family:'Courier New', Courier, monospace;">
+        <div class="row">
+            <div class="col text-center">
+                <img src="./Logo.png">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col text-center">
+                <h1>Facturación Aguasan</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-2">
+            <div class="col col-lg-10 text-center">
+                <input v-model="nombreUsuario" type="text" id="nombre" class="form-control"
+                    placeholder="Nombre del usuario">
+            </div>
+        </div>
+        <div class="row justify-content-center mb-2">
+            <div class="col col-lg-5 text-center">
+                <select v-model="seleccionEstrato"  @change = "getIndex($event)" class="form-select">
+                    <option selected disabled>Seleccionar Estrato</option>
+                    <option v-for="(item,index) in estrato" v-text="item.estrato"></option>
+                </select>
+            </div>
+            <div class="col col-lg-5 text-center">
+                <input v-model.number="m3Consumido" type="text" id="nombre" class="form-control" placeholder="M3 Consumidos">
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-2">
+            <div class="col col-lg-10 text-center">
+                <div class="d-grid gap-2">
+                    <button @click="agregarUsuarios" class="btn btn-primary" type="button">Calcular factura</button>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row  justify-content-center ">
+            <div class="col col-lg-10">
+                <table class="table  table-bordered ">
+                    <thead>
+                        <tr class="table table-striped text-center g-col-10">
+                            <!--Centrar titulo de tablas-->
+                            <th scope="col" class="pt-3">Id Factura</th>
+                            <th scope="col" class="pt-3">Usuario</th>
+                            <th scope="col" class="pt-3">Cargo Fijo</th>
+                            <th scope="col" class="pt-3">Cantidad mts</th>
+                            <th scope="col" class="pt-3">Subsidio</th>
+                            <th scope="col" class="pt-3">Total factura</th>
+                            <th scope="col" class="pt-3"></th>
+                            <th scope="col" class="pt-3"></th>
+
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        <tr v-for="(item,index) in usuarios">
+                            <td v-text="item.numeroFactura"></td>
+                            <td v-text="item.nombreUsuario"></td>
+                            <td v-text="item.cargoFijo"></td>
+                            <td v-text="item.metrosConsumidos"></td>
+                            <td v-text="item.subsidio"></td>
+                            <td v-text="item.totalFactura"></td>
+                            <td>
+                                <button @click="borarEmpleados(index)" class="btn btn-outline-info" type="button">Borrar</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#modal01" type="button">Factura</button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="modal" tabindex="-1" id="modal01">
+            <div class="modal-dialog">
+                <div class="modal-content" >
+                    <div class="modal-header">
+                        <h5 class="modal-title">Factura</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p v-text="concepto1"></p>
+                        <p v-text="concepto2"></p>
+                        <p v-text="concepto3"></p>
+                        <p v-text="concepto4"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-2">
+            <div class="col col-lg-10 text-right">
+                <h1>Informes</h1>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-2">
+            <div class="col col-lg-10 text-right">
+                <h3>Promedio de metros consumidos</h3>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-4">
+            <div class="col col-lg-2 text-right">
+                <h4>Estrato1</h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label>Metros consumidos</label>
+                <h4 v-text="promedioMetros1"></h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label>Total facturado</label>
+                <h4 v-text="totalFacturado1"></h4>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-4">
+            <div class="col col-lg-2 text-right">
+                <h4>Estrato2</h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label>Metros consumidos</label>
+                <h4 v-text="promedioMetros2"></h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label>Total facturado</label>
+                <h4 v-text="totalFacturado2"></h4>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-4">
+            <div class="col col-lg-2 text-right">
+                <h4>Estrato3</h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label>Metros consumidos</label>
+                <h4 v-text="promedioMetros3"></h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label>Total facturado</label>
+                <h4 v-text="totalFacturado3"></h4>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-4">
+            <div class="col col-lg-2 text-right">
+                <h4>Total</h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label>Total facturado en todos los estratos</label>
+                <h4 v-text="total"></h4>
+            </div>
+            <div class="col col-lg-4 text-right">
+                <label></label>
+                <h4 v-text=""></h4>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="./main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+        integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+        integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+        crossorigin="anonymous"></script>
+    <style>
+        body {
+
+            background-image: url("https://i.ibb.co/d29S672/vecteezy-water-droplets-on-white-background-1397104.jpg");
+            background-repeat: no-repeat;
+            background-position-x: center;
+            background-position-y: center;
+            background-size: cover;
+        }
+
+        .container {
+            background-color: white;
+            opacity: 1;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 10px 0 #3498db inset, 0 0 10px 4px #3498db;
+        }
+    </style>
+</body>
+
+</html>
